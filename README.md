@@ -1,159 +1,134 @@
-# Turborepo starter
+# Math Game Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern full-stack monorepo for the **Math Game** application built with [Turborepo](https://turbo.build/), [Bun](https://bun.sh/), [Prisma ORM v7](https://www.prisma.io/), PostgreSQL, and Express.
 
-## Using this example
+---
 
-Run the following command:
+## 🏗️ Architecture & Project Structure
 
-```sh
-npx create-turbo@latest
+This repository is structured as a Turborepo monorepo sharing a single Prisma v7 database package across applications.
+
+```
+mathGame/
+├── apps/
+│   └── be/                   # Express Backend API
+│       ├── index.ts          # Server entrypoint (/check, /users)
+│       └── package.json
+├── packages/
+│   ├── db/                   # Shared Prisma ORM v7 Package
+│   │   ├── prisma/
+│   │   │   └── schema.prisma # Database schema (PostgreSQL)
+│   │   ├── src/
+│   │   │   ├── client.ts     # Singleton Prisma Client with @prisma/adapter-pg
+│   │   │   └── index.ts      # Package exports
+│   │   ├── scripts/
+│   │   │   └── test-database.ts # Database verification script
+│   │   └── prisma.config.ts  # Prisma v7 config loader
+│   ├── ui/                   # Shared UI component library
+│   ├── typescript-config/    # Shared tsconfig bases
+│   └── eslint-config/        # Shared ESLint configurations
+├── turbo.json                # Turborepo task pipeline
+├── package.json              # Workspace root scripts
+└── .env                      # Environment variables
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## ⚡ Tech Stack
 
-### Apps and Packages
+- **Monorepo Manager**: [Turborepo v2](https://turbo.build/repo)
+- **Runtime / Package Manager**: [Bun v1.3](https://bun.sh/)
+- **Database ORM**: [Prisma v7](https://www.prisma.io/) with `@prisma/adapter-pg`
+- **Database**: PostgreSQL
+- **Backend Framework**: [Express v5](https://expressjs.com/)
+- **Language**: TypeScript v5 / v7
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## 🚀 Getting Started
 
-### Utilities
+### Prerequisites
 
-This Turborepo has some additional tools already setup for you:
+- [Bun](https://bun.sh/) (`v1.3+`)
+- [Node.js](https://nodejs.org/) (`>= 24`)
+- PostgreSQL database instance
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### 1. Installation
 
-### Build
+Clone the repository and install workspace dependencies:
 
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```bash
+git clone https://github.com/neyaz14/Math-Game.git
+cd Math-Game
+bun install
 ```
 
-Without global `turbo`, use your package manager:
+### 2. Environment Setup
 
-```sh
-cd my-turborepo
-npx turbo build
-bun exec turbo build
-bun exec turbo build
+Create a `.env` file at the root of the project (or copy from `.env.example`):
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/mathgame?schema=public"
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### 3. Generate Prisma Client
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Generate the Prisma v7 client into `packages/db/src/generated/prisma`:
 
-```sh
-turbo build --filter=docs
+```bash
+bun run db:generate
 ```
 
-Without global `turbo`:
+### 4. Database Schema Migration / Push
 
-```sh
-npx turbo build --filter=docs
-bun exec turbo build --filter=docs
-bun exec turbo build --filter=docs
+Push the schema to your PostgreSQL database:
+
+```bash
+bun run db:push
 ```
 
-### Develop
+### 5. Start Development Server
 
-To develop all apps and packages, run the following command:
+Start all applications and services in development mode with Turborepo:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+bun run dev
 ```
 
-Without global `turbo`, use your package manager:
+Or run only the backend server:
 
-```sh
-cd my-turborepo
-npx turbo dev
-bun exec turbo dev
-bun exec turbo dev
+```bash
+bun --filter @repo/be dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## 🛠️ Available Scripts
 
-```sh
-turbo dev --filter=web
-```
+Run these scripts from the repository root:
 
-Without global `turbo`:
+| Command | Description |
+| :--- | :--- |
+| `bun run dev` | Starts all apps in watch/development mode via Turbo |
+| `bun run build` | Builds all apps and packages |
+| `bun run check-types` | Runs TypeScript type checking across all workspace packages |
+| `bun run db:generate` | Generates the Prisma ORM v7 client |
+| `bun run db:push` | Pushes the Prisma schema to the target database |
+| `bun run db:migrate` | Runs database migrations in development |
+| `bun run db:test` | Runs the database connection verification script |
+| `bun run db:studio` | Opens Prisma Studio GUI to view/edit database records |
 
-```sh
-npx turbo dev --filter=web
-bun exec turbo dev --filter=web
-bun exec turbo dev --filter=web
-```
+---
 
-### Remote Caching
+## 🌐 API Endpoints (`apps/be`)
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+The backend Express application runs on `http://localhost:3001` by default.
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+- `GET /check` — Server status & health check endpoint.
+- `GET /users` — Fetches all user records from PostgreSQL via `@repo/db`.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+## 📄 License
 
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-bun exec turbo login
-bun exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-bun exec turbo link
-bun exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Private repository. All rights reserved.
