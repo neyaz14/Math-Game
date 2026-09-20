@@ -1,20 +1,16 @@
 import express from "express";
 import { prisma } from "@repo/db";
 import "dotenv/config";
+import { authRouter } from "./routes/auth.router";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
+app.use(cookieParser());
 
-// 1. Health check API endpoint
-app.get("/check", (_req, res) => {
-  res.json({
-    status: "ok",
-    message: "Server is up and running!",
-    timestamp: new Date().toISOString(),
-  });
-});
+app.use("/api/v1/auth", authRouter);
 
 // 2. Fetch all users API endpoint (wrapped in try/catch)
 app.get("/users", async (_req, res) => {
@@ -37,3 +33,4 @@ app.get("/users", async (_req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Express server running on http://localhost:${PORT}`);
 });
+
