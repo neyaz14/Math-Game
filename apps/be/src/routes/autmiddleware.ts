@@ -4,7 +4,8 @@ import { verify } from "jsonwebtoken";
 const JWT_SECRECT = process.env.JWT_SECRECT!;
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies.accessToken;
+  const token: string = req.cookies.accessToken;
+  console.log(token);
 
   if (!token) {
     return res.status(401).json({
@@ -14,9 +15,10 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   }
 
   try {
-    const decoded = verify(token, JWT_SECRECT) as {
-      userId: string;
-    };
+    // const decoded = verify(token, JWT_SECRECT) as {
+    //   userId: string;
+    // };
+    const decoded = verifyToken(token);
     console.log("inside autmiddleware - decoded", decoded);
 
     req.user = decoded;
@@ -29,3 +31,10 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   }
 };
 
+export const verifyToken = (givenToken: string) => {
+  const decodedToken = verify(givenToken, JWT_SECRECT) as {
+    userId: string;
+  };;
+
+  return decodedToken;
+}

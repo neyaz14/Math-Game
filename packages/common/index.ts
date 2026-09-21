@@ -16,7 +16,7 @@ export type LoginInput = z.infer<typeof loginSchema>;
 
 export const zodErrorMessage = ({ error }: { error: ZodError }): string => {
   if (!error || !error.issues || error.issues.length === 0) {
-    console.log("inside zod error", error);
+    // console.log("inside zod error", error);
     return "Validation failed";
   }
   return error.issues.map((issue) => issue.message).join(", ");
